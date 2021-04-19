@@ -1,10 +1,11 @@
-#include <math.h>
 #include <uWS/uWS.h>
 
+#include <cmath>
 #include <iostream>
 #include <string>
 
 #include "json.hpp"
+#include "parser.h"
 #include "pid.h"
 
 // for convenience
@@ -16,19 +17,9 @@ constexpr double pi() { return M_PI; }
 double deg2rad(double x) { return x * pi() / 180; }
 double rad2deg(double x) { return x * 180 / pi(); }
 
-// Checks if the SocketIO event has JSON data.
-// If there is data the JSON object in string format will be returned,
-// else the empty string "" will be returned.
-string hasData(string s) {
-  auto found_null = s.find("null");
-  auto b1 = s.find_first_of("[");
-  auto b2 = s.find_last_of("]");
-  if (found_null != string::npos) {
-    return "";
-  } else if (b1 != string::npos && b2 != string::npos) {
-    return s.substr(b1, b2 - b1 + 1);
-  }
-  return "";
+void ResetSim(uWS::WebSocket<uWS::SERVER> ws) {
+  std::string reset_msg = "42[\"reset\",{}]";
+  ws.send(reset_msg.data(), reset_msg.length(), uWS::OpCode::TEXT);
 }
 
 int main() {
@@ -45,19 +36,16 @@ int main() {
     // The 4 signifies a websocket message
     // The 2 signifies a websocket event
     if (length && length > 2 && data[0] == '4' && data[1] == '2') {
-      auto s = hasData(string(data).substr(0, length));
+      auto s = parser::HasData(string(data).substr(0, length));
 
       if (s != "") {
         auto j = json::parse(s);
 
-        string event = j[0].get<string>();
+        auto event = j[0].get<string>();
 
         if (event == "telemetry") {
           // j[1] is the data JSON object
-          double cte = std::stod(j[1]["cte"].get<string>());
-          double speed = std::stod(j[1]["speed"].get<string>());
-          double angle = std::stod(j[1]["steering_angle"].get<string>());
-          double steer_value;
+          auto sensor_data = parser::ParseMessage(j[1]);
           /**
            * TODO: Calculate steering value here, remember the steering value is
            *   [-1, 1].
@@ -66,11 +54,10 @@ int main() {
            */
 
           // DEBUG
-          std::cout << "CTE: " << cte << " Steering Value: " << steer_value
-                    << std::endl;
+          std::cout << sensor_data << std::endl;
 
           json msgJson;
-          msgJson["steering_angle"] = steer_value;
+          msgJson["steering_angle"] = sensor_data.steering_angle;
           msgJson["throttle"] = 0.3;
           auto msg = "42[\"steer\"," + msgJson.dump() + "]";
           std::cout << msg << std::endl;

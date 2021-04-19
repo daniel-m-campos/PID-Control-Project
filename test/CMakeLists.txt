@@ -9,6 +9,10 @@ FetchContent_MakeAvailable(googletest)
 add_executable(
         UNIT_TEST
         test.cpp
-        test_pid.cpp)
+        test_pid.cpp
+        test_parser.cpp
+)
 
 target_link_libraries(UNIT_TEST PID gtest gtest_main)
+
+file(COPY ${CMAKE_SOURCE_DIR}/data DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
