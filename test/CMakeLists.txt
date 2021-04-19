@@ -11,6 +11,7 @@ add_executable(
         test.cpp
         test_pid.cpp
         test_parser.cpp
+        test_learner.cpp
 )
 
 target_link_libraries(UNIT_TEST PID gtest gtest_main)

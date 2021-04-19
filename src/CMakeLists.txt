@@ -3,4 +3,5 @@ add_library(
         SHARED
         pid.cpp
         parser.cpp
+        learner.cpp
 )
