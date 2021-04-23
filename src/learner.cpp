@@ -4,11 +4,11 @@
 #include <utility>
 
 CoordinateDescent::CoordinateDescent(
-    std::function<double(std::vector<double>)> simulator,
+    std::function<double(const std::vector<double>&)> error_fcn,
     std::vector<double> initial_parameters,
     std::vector<double> parameter_change, double tolerance, double up_factor,
     double down_factor)
-    : simulator_{std::move(simulator)},
+    : error_fcn{std::move(error_fcn)},
       initial_parameters_{std::move(initial_parameters)},
       parameter_change_{std::move(parameter_change)},
       up_factor_{up_factor},
@@ -28,16 +28,16 @@ double CoordinateDescent::MeanSquaredError() const {
 
 void CoordinateDescent::Learn() {
   best_parameters_ = initial_parameters_;
-  mean_squared_error_ = simulator_(best_parameters_);
+  mean_squared_error_ = error_fcn(best_parameters_);
   auto parameter_change = parameter_change_;
   double mse;
   while (Norm(parameter_change) > tolerance_) {
     for (int i = 0; i < best_parameters_.size(); ++i) {
       best_parameters_[i] += parameter_change[i];
-      mse = simulator_(best_parameters_);
+      mse = error_fcn(best_parameters_);
       if (mse >= mean_squared_error_) {
         best_parameters_[i] -= 2 * parameter_change[i];
-        mse = simulator_(best_parameters_);
+        mse = error_fcn(best_parameters_);
       }
       if (mse < mean_squared_error_) {
         mean_squared_error_ = mse;

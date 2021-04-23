@@ -14,17 +14,16 @@ class Learner {
 
 class CoordinateDescent : public Learner {
  public:
-  CoordinateDescent(std::function<double(std::vector<double>)> simulator,
+  CoordinateDescent(std::function<double(const std::vector<double>&)> error_fcn,
                     std::vector<double> initial_parameters,
-                    std::vector<double> parameter_change,
-                    double tolerance, double up_factor = 1.1,
-                    double down_factor = 0.9);
+                    std::vector<double> parameter_change, double tolerance,
+                    double up_factor = 1.1, double down_factor = 0.9);
   void Learn() override;
   const std::vector<double>& BestParameters() const override;
   double MeanSquaredError() const override;
 
  private:
-  std::function<double(std::vector<double>)> simulator_;
+  std::function<double(const std::vector<double>&)> error_fcn;
   std::vector<double> initial_parameters_;
   std::vector<double> parameter_change_;
   std::vector<double> best_parameters_;
