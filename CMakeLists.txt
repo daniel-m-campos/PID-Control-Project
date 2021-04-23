@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 3.5)
+cmake_minimum_required(VERSION 3.5)
 project(PIDControl)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -22,4 +22,7 @@ if (BUILD_TESTS)
 endif ()
 
 add_executable(MAIN src/main.cpp)
-target_link_libraries(MAIN PID z ssl uv uWS)
+target_link_libraries(MAIN PID)
+
+add_executable(TRAIN src/train.cpp)
+target_link_libraries(TRAIN PID)
