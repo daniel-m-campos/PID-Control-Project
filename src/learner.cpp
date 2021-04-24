@@ -1,6 +1,6 @@
 #include "learner.h"
 
-#include <algorithm>
+#include <cassert>
 #include <utility>
 
 CoordinateDescent::CoordinateDescent(

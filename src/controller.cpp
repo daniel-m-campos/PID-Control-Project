@@ -1,5 +1,7 @@
 #include "controller.h"
 
+#include <algorithm>
+
 Controller::Controller(PID& steer_pid, PID& throttle_pid, double target_speed,
                        double cte_speed_discount)
     : steer_pid_(steer_pid),
@@ -10,7 +12,8 @@ Controller::Controller(PID& steer_pid, PID& throttle_pid, double target_speed,
 Controller::Output Controller::operator()(const SensorData& input) {
   steer_pid_.UpdateError(input.cross_track_error);
   auto target_speed =
-      target_speed_ / (1 + cte_speed_discount_ * steer_pid_.TotalError());
+      target_speed_ /
+      (1 + cte_speed_discount_ * std::abs(input.cross_track_error));
   throttle_pid_.UpdateError(input.speed - target_speed);
   return Output{ComputeSteeringAngle(), ComputeThrottle()};
 }

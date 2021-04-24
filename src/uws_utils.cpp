@@ -1,5 +1,7 @@
 #include "uws_utils.h"
 
+#include <uWS/uWS.h>
+
 #include "parser.h"
 
 void uws_utils::ResetSimulator(uWS::WebSocket<uWS::SERVER> ws) {
