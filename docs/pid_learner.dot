@@ -1,0 +1,29 @@
+digraph PIDLeaner {
+    size = "4,4"
+    dpi = 300
+    node[shape = record]
+
+    learner [label = "{Learner \<\<interface\>\>| void Learn()\lvector\<double\> BestParameters()\ldouble MeanSquarefError()\l}"];
+    coord_descent [label = "{CoordinateDescent | void Learn()\lvector\<double\>BestParameters()\ldouble MeanSquarefError()\l}"];
+    error_fcn [label = "{ErrorFcn \<\<interface\>\> | double operator()(vector\<double\>)\l}"];
+    sim_error_fcn [label = "{Simulation | double operator()(vector\<double\>)\l}"];
+    handler [label = "{Handler \<\<interface\>\> | void operator()(WebSocket\<SERVER\>, char*, size_t,OpCode)\l}"];
+    main_handler [label = "{Main Handler | void operator()(WebSocket\<SERVER\>, char*, size_t,OpCode)\l}"];
+    main_handler [label = "{Main Handler | void operator()(WebSocket\<SERVER\>, char*, size_t,OpCode)\l}"];
+    hub [label = "{Hub | void onMessage(Handler)\lvoid run()\l}"];
+    pid [label = "{PID | void Reset(double,double,double)\lvoid UpdateError(double)\ldouble TotalError()\ldouble MeanSquaredError() const\l}"];
+    controller [label = "{Controller | Controller::Output operator()(const SensorData& input)\l}"];
+    sensor_data [label = "{SensorData |+ cross_track_error\l+ speed\l+ steering_angle\l+ throttle\l}"];
+    output [label = "{Controller::Output |+ steering_angle\l+ throttle\l}"];
+
+    coord_descent -> learner[arrowhead="empty"];
+    main_handler -> handler[arrowhead="empty"];
+    hub -> handler[arrowhead="empty"];
+    sim_error_fcn -> error_fcn[arrowhead="empty"];
+    sim_error_fcn -> hub;
+    sim_error_fcn -> pid;
+    coord_descent -> error_fcn;
+    main_handler -> controller;
+    controller -> pid[label="2"]
+
+}
